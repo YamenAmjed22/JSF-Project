@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Dashboard</title>
+    <h:outputStylesheet name="styles.css"/>
+</h:head>
+<h:body style="background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh;">
+
+    <p:panel header="User Dashboard" style="width: 60%; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: white;">
+
+        <h2 style="text-align: center; color: #007bff;">Welcome, #{userBean.loggedInUser.firstName}!</h2>
+
+        <p:panelGrid columns="2" style="width: 100%;" columnClasses="label-column, value-column">
+
+            <p:outputLabel value="Username:" style="font-weight: bold; color: #333;" />
+            <h:outputText value="#{userBean.loggedInUser.username}" />
+
+            <p:outputLabel value="First Name:" style="font-weight: bold; color: #333;" />
+            <h:outputText value="#{userBean.loggedInUser.firstName}" />
+
+            <p:outputLabel value="Last Name:" style="font-weight: bold; color: #333;" />
+            <h:outputText value="#{userBean.loggedInUser.lastName}" />
+
+            <p:outputLabel value="Age:" style="font-weight: bold; color: #333;" />
+            <h:outputText value="#{userBean.loggedInUser.age}" />
+
+        </p:panelGrid>
+
+        <h:form style="text-align: center; margin-top: 20px;">
+            <p:commandButton value="Logout" action="#{userBean.logout()}"
+                             style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;"
+                             oncomplete="PF('logoutDialog').show();" />
+        </h:form>
+
+    </p:panel>
+
+</h:body>
+</html>
