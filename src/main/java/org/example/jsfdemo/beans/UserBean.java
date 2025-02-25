@@ -66,6 +66,11 @@ public class UserBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid username or password.", null));
             return;
         }
+        if (logingInUser.getStatus() != 1 ) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid User .", null));
+            return;
+        }
 
         loggedInUser = logingInUser;
         exit("../views/Dashbord.xhtml");
