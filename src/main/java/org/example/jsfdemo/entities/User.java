@@ -32,14 +32,28 @@ public class User {
     @Column(name = "AGE")
     private Integer age;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ATTACH_ID")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ATTACH_ID", referencedColumnName = "ATTACH_ID")
     private Attachment attach;
-
-
 
     @Column(name = "BIRTHDATE")
     private LocalDate birthdate;
+
+    @Column(name = "STATUS")
+    private Integer status;
+
+
+
+
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
 
     public LocalDate getBirthdate() {
         return birthdate;

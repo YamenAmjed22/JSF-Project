@@ -7,8 +7,18 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.servlet.http.Part;
+import org.example.jsfdemo.entities.Attachment;
 import org.example.jsfdemo.entities.User;
+import org.example.jsfdemo.services.AttachmentService;
 import org.example.jsfdemo.services.UserService;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
+
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -21,8 +31,18 @@ import java.util.logging.Logger;
 @Named
 @SessionScoped
 public class UserBean implements Serializable {
+
+    private Attachment attachment;
     @EJB
     private UserService userService;
+
+    @EJB
+    private AttachmentService attachmentService;
+
+    private UploadedFile uploadedFile;
+    private static final String UPLOAD_DIRECTORY = "D:/Projects/JSFDemo-main/src/main/webapp/Imgs/"; // Server folder to store images
+
+
     private String username;
     private String password;
     private String firstName;
@@ -35,6 +55,7 @@ public class UserBean implements Serializable {
     @PostConstruct
     public void init() {
         user = new User();
+        attachment = new Attachment();
     }
 
     public void login() {
@@ -77,11 +98,24 @@ public class UserBean implements Serializable {
             return;
         }
 
+
+        // Calculate age if birthdate is provided
         if (user.getBirthdate() != null) {
             int age = (int) ChronoUnit.YEARS.between(user.getBirthdate(), LocalDate.now());
-            user.setAge(age);
+            if (age < 18){
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "This age must be more than 18 ", null));
+                    return;
+            }
+            else{
+                user.setAge(age);
+
+            }
         }
 
+        // Save user
+        // Assign attachment to user
+        user.setAttach(attachment);
         userService.addUser(user);
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "User registered successfully!", null));
@@ -89,6 +123,7 @@ public class UserBean implements Serializable {
         user = new User(); // Reset form
         exit("../views/MainPage.xhtml");
     }
+
 
 
     public void goToSignIn() {
@@ -103,6 +138,43 @@ public class UserBean implements Serializable {
             Logger.getLogger(null).log(Level.SEVERE, null, ex);
         }
     }
+
+    public void upload(FileUploadEvent event) {
+        this.uploadedFile = event.getFile();
+        if (uploadedFile != null) {
+            try {
+                // Ensure directory exists
+                File uploadDir = new File(UPLOAD_DIRECTORY);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                // Save file with unique name
+                String fileName = System.currentTimeMillis() + "_" + uploadedFile.getFileName();
+                File savedFile = new File(uploadDir, fileName);
+
+                // Save file to server
+                try (InputStream input = uploadedFile.getInputStream()) {
+                    Files.copy(input, savedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                // Save attachment to database
+                 attachment = new Attachment();
+                attachment.setFileName(fileName);
+                attachment.setFullPath(savedFile.getPath());
+
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "File uploaded successfully!", null));
+
+            } catch (IOException e) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "File upload failed!", null));
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     // getter and setter
     public String getUsername() {
@@ -167,5 +239,21 @@ public class UserBean implements Serializable {
 
     public void setLoggedInUser(User loggedInUser) {
         this.loggedInUser = loggedInUser;
+    }
+
+    public UploadedFile getUploadedFile() {
+        return uploadedFile;
+    }
+
+    public void setUploadedFile(UploadedFile uploadedFile) {
+        this.uploadedFile = uploadedFile;
+    }
+
+    public Attachment getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(Attachment attachment) {
+        this.attachment = attachment;
     }
 }

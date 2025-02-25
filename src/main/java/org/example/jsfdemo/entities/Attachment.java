@@ -1,15 +1,14 @@
 package org.example.jsfdemo.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "ATTACHMENTS")
 public class Attachment {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ATTACH_ID_SEQ")
+    @SequenceGenerator(sequenceName = "ATTACH_ID_SEQ", allocationSize = 1, name = "ATTACH_ID_SEQ")
     @Column(name = "ATTACH_ID", nullable = false)
     private Long id;
 
@@ -20,6 +19,9 @@ public class Attachment {
     @Size(max = 240)
     @Column(name = "FULL_PATH", length = 240)
     private String fullPath;
+
+    @OneToOne(mappedBy = "attach") // Bidirectional mapping
+    private User user;
 
     public Long getId() {
         return id;
