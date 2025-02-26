@@ -48,7 +48,7 @@
                         <h:outputLabel for="authorId" value="Id:" />
                         <h:inputText id="authorId" value="#{mainBean.author.id}" required="true" readonly="#{mainBean.isEdit()}" requiredMessage="Author ID is required" style="width: 100%;"/>
 
-                        <h:outputLabel for="authorFirstName" value="First Name:" />
+                        <h:outputLabel for="authorFirstName"  value="First Name:" />
                         <h:inputText id="authorFirstName" value="#{mainBean.author.firstName}" required="true" requiredMessage="First Name is required" style="width: 100%;"/>
 
                         <h:outputLabel for="authorLastName" value="Last Name:" />
@@ -65,17 +65,24 @@
                   </p:messages>
                </p:dialog>
 
-               <p:dataTable id="authorsTable" var="author" value="#{mainBean.authors}" selectionMode="single"
+               <p:dataTable id="authorsTable" var="author" value="#{mainBean.authors}" selectionMode="single"  widgetVar="authorTable"
                             selection="#{mainBean.author}" style="width: 100%;" rowKey="#{author.id}">
                   <p:ajax event="rowSelect" listener="#{mainBean.onAuthorSelect}" update="@form:articlesTable" />
 
-                  <p:column headerText="Author Id">
+                  <f:facet name="header">
+                     <div class="flex justify-content-end">
+                        <p:inputText id="globalFilter" onkeyup="PF('authorTable').filter()" style="width:300px"
+                                     placeholder="Search all " />
+                     </div>
+                  </f:facet>
+
+                  <p:column headerText="Author Id" sortBy="#{author.id}" filterStyle="display:none"  filterBy="#{author.id}" filterMatchMode="contains">
                      <h:outputText value="#{author.id}" />
                   </p:column>
-                  <p:column headerText="Author Name">
+                  <p:column filterStyle="display:none" headerText="Author Name" filterBy="#{author.firstName} #{author.lastName}" filterMatchMode="contains" >
                      <h:outputText value="#{author.firstName} #{author.lastName}" />
                   </p:column>
-                  <p:column headerText="Age">
+                  <p:column headerText="Age" filterStyle="display:none"  filterBy="#{author.age}" filterMatchMode="contains">
                      <h:outputText value="#{author.age}" />
                   </p:column>
                   <p:column headerText="Actions" >

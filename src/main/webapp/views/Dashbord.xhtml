@@ -2,43 +2,90 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
 <h:head>
     <title>Dashboard</title>
     <h:outputStylesheet name="styles.css"/>
+    <!-- Add JavaScript to scroll to top on page load -->
+    <script type="text/javascript">
+        window.onload = function() {
+            // Scroll to top of the page
+            window.scrollTo(0, 0);
+        };
+    </script>
 </h:head>
-<h:body style="background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh;">
+<h:body style="background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100vh; width: 100%;">
 
-    <p:panel header="User Dashboard" style="width: 60%; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: white;">
+    <!-- Container for Dashboard and Users -->
+    <h:panelGroup layout="block" style="width: 60%; display: flex; flex-direction: column; align-items: center; gap: 20px;">
 
-        <h2 style="text-align: center; color: #007bff;">Welcome, #{userBean.loggedInUser.firstName}!</h2>
+        <!-- Dashboard Panel -->
+        <p:panel header="User Dashboard" style="width: 100%; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: white;">
+            <h2 style="text-align: center; color: #007bff;">Welcome, #{userBean.loggedInUser.firstName}!</h2>
 
-        <p:panelGrid columns="2" style="width: 100%;" columnClasses="label-column, value-column">
+            <p:panelGrid columns="2" style="width: 100%;" columnClasses="label-column, value-column">
+                <p:outputLabel value="Username:" style="font-weight: bold; color: #333;" />
+                <h:outputText value="#{userBean.loggedInUser.username}" />
 
-            <p:outputLabel value="Username:" style="font-weight: bold; color: #333;" />
-            <h:outputText value="#{userBean.loggedInUser.username}" />
+                <p:outputLabel value="First Name:" style="font-weight: bold; color: #333;" />
+                <h:outputText value="#{userBean.loggedInUser.firstName}" />
 
-            <p:outputLabel value="First Name:" style="font-weight: bold; color: #333;" />
-            <h:outputText value="#{userBean.loggedInUser.firstName}" />
+                <p:outputLabel value="Last Name:" style="font-weight: bold; color: #333;" />
+                <h:outputText value="#{userBean.loggedInUser.lastName}" />
 
-            <p:outputLabel value="Last Name:" style="font-weight: bold; color: #333;" />
-            <h:outputText value="#{userBean.loggedInUser.lastName}" />
+                <p:outputLabel value="Age:" style="font-weight: bold; color: #333;" />
+                <h:outputText value="#{userBean.loggedInUser.age}" />
 
-            <p:outputLabel value="Age:" style="font-weight: bold; color: #333;" />
-            <h:outputText value="#{userBean.loggedInUser.age}" />
+                <p:outputLabel value="My IMG" style="font-weight: bold; color: #333;" />
+                <p:graphicImage id="img" value="../Imgs/#{userBean.loggedInUser.attach.getFileName()}"
+                                style="display: block; margin-left: auto; margin-right: auto; width: 100px; height: auto;"
+                                alt="Profile Image"/>
 
-            <p:outputLabel value="My IMG" style="font-weight: bold; color: #333;" />
-            <p:graphicImage id="img" value="../Imgs/#{userBean.loggedInUser.attach.getFileName()}" style="display: block; margin-left: auto; margin-right: auto; width: 100px; height: auto;" alt="Logo"/>
 
-        </p:panelGrid>
+            </p:panelGrid>
 
-        <h:form style="text-align: center; margin-top: 20px;">
-            <p:commandButton value="Logout" action="#{userBean.logout()}"
-                             style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;"
-                             oncomplete="PF('logoutDialog').show();" />
-        </h:form>
 
-    </p:panel>
+
+            <h:form style="text-align: center; margin-top: 20px;">
+                <p:commandButton value="Logout" action="#{userBean.logout()}"
+                                 style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;"
+                                 oncomplete="PF('logoutDialog').show();" />
+            </h:form>
+        </p:panel>
+
+        <!-- Users Cards Container (Below Dashboard) -->
+        <h:panelGroup layout="block" style="width: 100%; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+
+            <ui:repeat value="#{repeatBean.users}" var="user">
+                <p:card style="width: 250px; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); background-color: white; text-align: center;">
+                    <f:facet name="title">#{user.firstName} #{user.lastName}</f:facet>
+
+                    <p:graphicImage id="user-img" value="../Imgs/#{user.attach.getFileName()}"
+                                    style="display: block; margin: 10px auto; width: 80px; height: 80px; border-radius: 50%;"
+                                    alt="User Profile Image"/>
+
+
+                    <p:outputPanel style="display: flex; flex-direction: column; gap: 5px; text-align: left;">
+                        <p:outputLabel value="Middle Name: " style="font-weight: bold; color: #333;" />
+                        <h:outputText value="#{user.middleName}" />
+
+                        <p:outputLabel value="Age: " style="font-weight: bold; color: #333;" />
+                        <h:outputText value="#{user.age}" />
+
+                        <p:outputLabel value="Username: " style="font-weight: bold; color: #333;" />
+                        <h:outputText value="#{user.username}" />
+
+                        <p:outputLabel value="Status: " style="font-weight: bold; color: #333;" />
+                        <h:outputText value="#{user.status}" />
+
+                    </p:outputPanel>
+                </p:card>
+            </ui:repeat>
+
+        </h:panelGroup>
+
+    </h:panelGroup>
 
 </h:body>
 </html>

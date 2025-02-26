@@ -6,6 +6,9 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.example.jsfdemo.entities.User;
 
+import java.util.Collections;
+import java.util.List;
+
 @Stateless
 public class UserServiceImp implements UserService {
     @PersistenceContext(unitName = "TOBY_PU")
@@ -25,4 +28,15 @@ public class UserServiceImp implements UserService {
         } catch (NoResultException e) {
             return null;
         }    }
+
+    @Override
+    public List<User> findAllUsers() {
+        try {
+            return entityManager.createQuery("SELECT u FROM User u", User.class)
+                    .getResultList();
+        } catch (NoResultException e) {
+            return Collections.emptyList();
+        }
+    }
+
 }
