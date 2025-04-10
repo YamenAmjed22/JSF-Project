@@ -42,6 +42,18 @@
                                 style="display: block; margin-left: auto; margin-right: auto; width: 100px; height: auto;"
                                 alt="Profile Image"/>
 
+                <!-- Image Upload Form -->
+                <h:form enctype="multipart/form-data" style="text-align: center; margin-top: 10px;">
+                    <p:fileUpload listener="#{userBean.updateProfileImage}"
+                                  mode="advanced"
+                                  dragDropSupport="true"
+                                  auto="true"
+                                  update="img"
+                                  sizeLimit="5000000"
+                                  label="Upload New Image"
+                                  style="margin-top: 10px;" />
+                </h:form>
+
 
             </p:panelGrid>
 

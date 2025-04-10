@@ -179,6 +179,46 @@ public class UserBean implements Serializable {
         }
     }
 
+    public void updateProfileImage(FileUploadEvent event) {
+        this.uploadedFile = event.getFile();
+        if (uploadedFile != null && loggedInUser != null) {
+            try {
+                // Ensure upload directory exists
+                File uploadDir = new File(UPLOAD_DIRECTORY);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                // Generate a unique file name
+                String fileName = System.currentTimeMillis() + "_" + uploadedFile.getFileName();
+                File savedFile = new File(uploadDir, fileName);
+
+                // Save file to server
+                try (InputStream input = uploadedFile.getInputStream()) {
+                    Files.copy(input, savedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                // Update user attachment
+                Attachment newAttachment = new Attachment();
+                newAttachment.setFileName(fileName);
+                newAttachment.setFullPath(savedFile.getPath());
+
+                loggedInUser.setAttach(newAttachment);
+                attachmentService.addAttachment(newAttachment);
+                userService.updateUser(loggedInUser);
+
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Profile image updated successfully!", null));
+
+            } catch (IOException e) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Profile image update failed!", null));
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
 
     // getter and setter

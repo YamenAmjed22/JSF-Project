@@ -32,6 +32,8 @@ public class MainBean implements Serializable {
     private Author author;
     private Integer authorId;
     private List<Author> authors;
+
+
     private List<Article> articles;
     private Article article;
     private Integer articleId;

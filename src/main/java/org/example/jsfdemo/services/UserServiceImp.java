@@ -4,6 +4,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.example.jsfdemo.entities.User;
 
 import java.util.Collections;
@@ -37,6 +38,13 @@ public class UserServiceImp implements UserService {
         } catch (NoResultException e) {
             return Collections.emptyList();
         }
+    }
+
+    @Transactional
+    public void updateUser(User loggedInUser) {
+        entityManager.merge(loggedInUser);
+
+
     }
 
 }
